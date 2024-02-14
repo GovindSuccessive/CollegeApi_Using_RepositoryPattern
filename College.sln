@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollegeWebApis", "CollegeWebApis\CollegeWebApis.csproj", "{B8A9C07E-3CC0-4977-B6BC-F8DEB052E488}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{2300DB0F-BB6B-4989-A30A-8E61FEB13F73}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8A9C07E-3CC0-4977-B6BC-F8DEB052E488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8A9C07E-3CC0-4977-B6BC-F8DEB052E488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8A9C07E-3CC0-4977-B6BC-F8DEB052E488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8A9C07E-3CC0-4977-B6BC-F8DEB052E488}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2300DB0F-BB6B-4989-A30A-8E61FEB13F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2300DB0F-BB6B-4989-A30A-8E61FEB13F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2300DB0F-BB6B-4989-A30A-8E61FEB13F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2300DB0F-BB6B-4989-A30A-8E61FEB13F73}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {82F2F8B9-F4F0-43E0-924E-E65AEECBEFDB}
+	EndGlobalSection
+EndGlobal
