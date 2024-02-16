@@ -33,7 +33,7 @@ namespace ClassLibrary.Data.Base
             await _collegeDbContext.SaveChangesAsync();
         }
 
-        public async Task updateAsync(T entity)
+/*        public async Task updateAsync(T entity)
         {
             EntityEntry entityEntry = _collegeDbContext.Entry<T>(entity);
             entityEntry.State = EntityState.Modified;
@@ -46,7 +46,7 @@ namespace ClassLibrary.Data.Base
             EntityEntry entityEntry = _collegeDbContext.Entry<T>(entity!);
             entityEntry.State = EntityState.Deleted;
             await _collegeDbContext.SaveChangesAsync();
-        }
+        }*/
 
     }
 

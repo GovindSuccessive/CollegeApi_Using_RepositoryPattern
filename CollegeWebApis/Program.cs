@@ -1,3 +1,10 @@
+using ClassLibrary.Context;
+using ClassLibrary.Data.Base;
+using ClassLibrary.Data.Entities;
+using ClassLibrary.Service.CourseService;
+using ClassLibrary.Service.StudentService;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +13,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<CollegeDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 
 var app = builder.Build();
 

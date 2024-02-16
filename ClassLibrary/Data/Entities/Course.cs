@@ -1,5 +1,6 @@
 ﻿using ClassLibrary.Data.Base;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ClassLibrary.Data.Entities
 {
@@ -10,7 +11,9 @@ namespace ClassLibrary.Data.Entities
         public string Name {get;set;}
         public string Description { get; set; }
 
-        public ICollection<Student> students {  get; set; }
+        [JsonIgnore]
+        
+        public ICollection<Student>? students {  get; set; }
         public DateTime CreatedAt {get;set;}
         public DateTime UpdatedAt {get;set;}
     }
