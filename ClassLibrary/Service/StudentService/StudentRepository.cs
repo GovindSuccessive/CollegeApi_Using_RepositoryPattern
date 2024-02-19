@@ -25,7 +25,7 @@ namespace ClassLibrary.Service.StudentService
 
         public async Task<IEnumerable<Student>> GetAllAsync()
         {
-            var students = await _collegeDbContext.Students.ToListAsync();
+            var students = await _collegeDbContext.Students.Include(x=>x.Course).ToListAsync();
             return students;
         }
 
@@ -40,5 +40,7 @@ namespace ClassLibrary.Service.StudentService
            _collegeDbContext.Update(student);
             await _collegeDbContext.SaveChangesAsync();
         }
+
+
     }
 }

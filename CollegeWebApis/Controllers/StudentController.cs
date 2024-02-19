@@ -1,27 +1,29 @@
 ﻿using ClassLibrary.Data.Base;
 using ClassLibrary.Data.Entities;
+using ClassLibrary.Service.CourseService;
 using ClassLibrary.Service.StudentService;
+using ClassLibrary.Service.UnitOfWork;
 using CollegeWebApis.Model.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeWebApis.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly IStudentRepository _studentRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public StudentController(IStudentRepository studentRepository)
+        public StudentController(IUnitOfWork unitOfWork)
         {
-            _studentRepository = studentRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet(Name = "GetAllStudent")]
         public async Task<ActionResult<IEnumerable<Student>>> GetAll()
         {
-            var result = await _studentRepository.GetAllAsync();
+            var result = await _unitOfWork.StudentRepository.GetAllAsync();
             if (result == null)
             {
                 return NotFound("Student Not Found");
@@ -36,7 +38,7 @@ namespace CollegeWebApis.Controllers
             {
                 return NotFound("Id is not Found");
             }
-            var result = await _studentRepository.GetByIdAsync(id);
+            var result = await _unitOfWork.StudentRepository.GetByIdAsync(id);
             if (result == null)
             {
                 return NotFound("No Studnet is Persent Correspond to " + id);
@@ -47,7 +49,7 @@ namespace CollegeWebApis.Controllers
         [HttpPost(Name = "AddStudentDto")]
         public async Task<ActionResult> Add(AddStudentDto student)
         {
-            if (student == null)
+            if (!ModelState.IsValid)
             {
                 return NotFound("Student contaning empty fields");
             }
@@ -55,14 +57,15 @@ namespace CollegeWebApis.Controllers
             {
                 Id = Guid.NewGuid(),
                 Name = student.Name,
-                Address= student.Address,
-                GmailId= student.GmailId,
-                PhoneNumber= student.PhoneNumber,
-                CourseRefId= student.CourseRefId,
+                Address = student.Address,
+                GmailId = student.GmailId,
+                PhoneNumber = student.PhoneNumber,
+                CourseRefId = student.CourseRefId,
+                //Course= _unitOfWork.CourseRepository.GetByIdAsync(student.CourseRefId).Result,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
-            await _studentRepository.AddAsync(newStudent);
+            await _unitOfWork.StudentRepository.AddAsync(newStudent);
             return Ok("Successfully Added Student");
         }
 
@@ -73,13 +76,13 @@ namespace CollegeWebApis.Controllers
             {
                 return NotFound("Id is Not Found");
             }
-            var student = await _studentRepository.GetByIdAsync(id);
+            var student = await _unitOfWork.StudentRepository.GetByIdAsync(id);
             if (student == null)
             {
                 return NotFound("There is no student persent against " + id + "student id");
             }
 
-            await _studentRepository.DeleteAsync(student);
+            await _unitOfWork.StudentRepository.DeleteAsync(student);
             return Ok("Successfully Delete Course");
         }
 
@@ -88,7 +91,7 @@ namespace CollegeWebApis.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingStudnet = await _studentRepository.GetByIdAsync(student.Id);
+                var existingStudnet = await _unitOfWork.StudentRepository.GetByIdAsync(student.Id);
                 if (existingStudnet == null)
                 {
                     return NotFound("No course has been found related to this Course Id");
@@ -103,7 +106,7 @@ namespace CollegeWebApis.Controllers
                     existingStudnet.UpdatedAt = DateTime.Now;
                 }
 
-                await _studentRepository.UpdateAsync(existingStudnet);
+                await _unitOfWork.StudentRepository.UpdateAsync(existingStudnet);
                 return Ok("Course Updated Successfully");
 
             }

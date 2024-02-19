@@ -3,6 +3,7 @@ using ClassLibrary.Data.Base;
 using ClassLibrary.Data.Entities;
 using ClassLibrary.Service.CourseService;
 using ClassLibrary.Service.StudentService;
+using ClassLibrary.Service.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,8 @@ builder.Services.AddDbContext<CollegeDbContext>(options => options.UseSqlServer(
 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
 var app = builder.Build();
 

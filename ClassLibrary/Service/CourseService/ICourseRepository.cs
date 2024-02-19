@@ -13,5 +13,9 @@ namespace ClassLibrary.Service.CourseService
         Task UpdateAsync(Course course);
 
         Task DeleteAsync(Course course);
+
+        Task<IEnumerable<Course>> GetCoursesPaged(int page, int pageSize);
+
+        Task<IEnumerable<Course>> GetCoursesByPagesNextPrev(bool nextPage, int pageSize);
     }
 }

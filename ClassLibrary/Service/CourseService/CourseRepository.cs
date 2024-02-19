@@ -8,9 +8,8 @@ namespace ClassLibrary.Service.CourseService
 {
     public class CourseRepository : ICourseRepository
     {
+        static int currentPage = 0;
         private readonly CollegeDbContext _collegeDbContext;
-
-
         public CourseRepository(CollegeDbContext collegeDbContext)
         {
             _collegeDbContext = collegeDbContext;
@@ -26,8 +25,6 @@ namespace ClassLibrary.Service.CourseService
             _collegeDbContext.Courses.Remove(course);
            await  _collegeDbContext.SaveChangesAsync();
         }
-
-   
 
         public async Task<IEnumerable<Course>> GetAllAsync()
         {
@@ -49,6 +46,28 @@ namespace ClassLibrary.Service.CourseService
         {
              _collegeDbContext.Courses.Update(course);
             await _collegeDbContext.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Course>> GetCoursesPaged(int page, int pageSize)
+        {
+            // Implementation for paginated retrieval
+            return await _collegeDbContext.Courses.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Course>> GetCoursesByPagesNextPrev(bool nextPage, int pageSize)
+        {
+            // You might need to track the current page state
+
+            if (nextPage)
+            {
+                currentPage++;
+            }
+            else
+            {
+                currentPage = Math.Max(1, currentPage - 1);
+            }
+
+            return await _collegeDbContext.Courses.Skip((currentPage - 1) * pageSize).Take(pageSize).ToListAsync();
         }
     }
 }

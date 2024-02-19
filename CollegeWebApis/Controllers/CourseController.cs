@@ -6,6 +6,8 @@ using ClassLibrary.Service.StudentService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CollegeWebApis.Model.Dto;
+using ClassLibrary.Service.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace CollegeWebApis.Controllers
 {
@@ -13,18 +15,18 @@ namespace CollegeWebApis.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
-        private readonly ICourseRepository _courseRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CourseController(ICourseRepository courseRepository)
+        public CourseController(IUnitOfWork unitOfWork)
         {
-            _courseRepository = courseRepository;
+            _unitOfWork = unitOfWork;
         }
 
 
         [HttpGet(Name ="GetAllCourse")]
         public async Task<ActionResult<IEnumerable<Course>>> GetAll()
         {
-            var result = await _courseRepository.GetAllAsync();
+            var result = await _unitOfWork.CourseRepository.GetAllAsync();
             if (result == null)
             {
                 return NotFound("Course Not Found");
@@ -39,7 +41,7 @@ namespace CollegeWebApis.Controllers
             {
                 return NotFound("Id is not Found");
             }
-            var result = await _courseRepository.GetByIdAsync(id);
+            var result = await _unitOfWork.CourseRepository.GetByIdAsync(id);
             if (result == null)
             {
                 return NotFound("No Course is Persent Correspond to " + id);
@@ -47,7 +49,7 @@ namespace CollegeWebApis.Controllers
             return Ok(result);
         }
 
-        [HttpPost(Name ="AddStudentDto")]
+        [HttpPost(Name ="AddCourseDto")]
         public async Task<ActionResult>Add(AddCourseDto course)
         {
             if(course == null)
@@ -62,7 +64,7 @@ namespace CollegeWebApis.Controllers
                 CreatedAt = DateTime.Now,
                 UpdatedAt= DateTime.Now
             };
-            await _courseRepository.AddAsync(newCourse);
+            await _unitOfWork.CourseRepository.AddAsync(newCourse);
             return Ok("Successfully Added Course");
         }
 
@@ -73,13 +75,13 @@ namespace CollegeWebApis.Controllers
             {
                 return NotFound("Id is Not Found");
             }
-            var course = await _courseRepository.GetByIdAsync(id);
+            var course = await _unitOfWork.CourseRepository.GetByIdAsync(id);
             if (course == null)
             {
                 return NotFound("There is no course persent against " + id + "course id");
             }
 
-            await _courseRepository.DeleteAsync(course);
+            await _unitOfWork.CourseRepository.DeleteAsync(course);
             return Ok("Successfully Delete Course");
         }
 
@@ -89,7 +91,7 @@ namespace CollegeWebApis.Controllers
         {
             if(ModelState.IsValid)
             {
-                var existingCourse = await _courseRepository.GetByIdAsync(course.Id);
+                var existingCourse = await _unitOfWork.CourseRepository.GetByIdAsync(course.Id);
                 if(existingCourse == null)
                 {
                     return NotFound("No course has been found related to this Course Id");
@@ -101,11 +103,28 @@ namespace CollegeWebApis.Controllers
                     existingCourse.UpdatedAt = DateTime.Now;
                 }
 
-                await _courseRepository.UpdateAsync(existingCourse);
+                await _unitOfWork.CourseRepository.UpdateAsync(existingCourse);
                 return Ok("Course Updated Successfully");
                 
             }
             return BadRequest("Course Details are Invalid");
+        }
+
+        
+        [HttpGet(Name = "GetCourseByPages")]
+
+        public  async Task<IEnumerable<Course>> GetCoursesPaged(int page, int pageSize)
+        {
+            // Implementation for paginated retrieval
+            return await   _unitOfWork.CourseRepository.GetCoursesPaged(page, pageSize);
+        }
+
+        [HttpGet(Name = "GetCourseByPagesNextPrev")]
+
+        public async Task<IEnumerable<Course>> GetCourseByPagesNextPrev(bool nextPage, int pageSize)
+        {
+            // Implementation for paginated retrieval
+            return await _unitOfWork.CourseRepository.GetCoursesByPagesNextPrev(nextPage, pageSize);
         }
 
     }

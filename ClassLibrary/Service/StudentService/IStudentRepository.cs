@@ -13,6 +13,8 @@ namespace ClassLibrary.Service.StudentService
         Task UpdateAsync(Student student);
 
         Task DeleteAsync(Student student);
-       
+
+        
+
     }
 }
