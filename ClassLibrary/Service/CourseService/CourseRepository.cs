@@ -28,7 +28,7 @@ namespace ClassLibrary.Service.CourseService
 
         public async Task<IEnumerable<Course>> GetAllAsync()
         {
-            var courses = await _collegeDbContext.Courses.ToListAsync();
+            var courses = await _collegeDbContext.Courses.Include(x=>x.students).ToListAsync();
             return courses;
         }
 
@@ -54,10 +54,9 @@ namespace ClassLibrary.Service.CourseService
             return await _collegeDbContext.Courses.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public async Task<IEnumerable<Course>> GetCoursesByPagesNextPrev(bool nextPage, int pageSize)
+        public async Task<IEnumerable<Course>> GetCoursesByPagesNextPrev(bool nextPage, int pageSize, string searchInput, string sortingInput)
         {
             // You might need to track the current page state
-
             if (nextPage)
             {
                 currentPage++;
@@ -67,7 +66,41 @@ namespace ClassLibrary.Service.CourseService
                 currentPage = Math.Max(1, currentPage - 1);
             }
 
-            return await _collegeDbContext.Courses.Skip((currentPage - 1) * pageSize).Take(pageSize).ToListAsync();
+            var query= await _collegeDbContext.Courses.Skip((currentPage - 1) * pageSize).Take(pageSize).OrderByDescending(x=>x.CreatedAt).ToListAsync();
+
+            if(sortingInput != null)
+            {
+                switch (sortingInput.ToLower())
+                {
+
+                    case "name":
+                        {
+                            query = query.OrderBy(x => x.Name).ToList();
+                            break;
+                        }
+                    case "update":
+                        {
+                            query = query.OrderByDescending(x => x.UpdatedAt).ToList();
+                            break;
+                        }
+                    case "created":
+                        {
+                            query = query.OrderByDescending(x => x.CreatedAt).ToList();
+                            break;
+                        }
+                    default:
+                        {
+                            query = query.OrderByDescending(x => x.CreatedAt).ToList();
+                            break;
+                        }
+                }
+
+            }
+                if(searchInput  != null)
+                {
+                    query = query.Where(x => x.Name.ToLower().Contains(searchInput.ToLower())).ToList();
+                }
+           return query;
         }
     }
 }

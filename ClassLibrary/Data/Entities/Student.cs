@@ -1,5 +1,6 @@
 ﻿using ClassLibrary.Data.Base;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ClassLibrary.Data.Entities
 {
@@ -15,6 +16,7 @@ namespace ClassLibrary.Data.Entities
         public string GmailId { get; set; }
 
         public Guid CourseRefId { get; set; }
+
         public virtual Course Course { get; set; }
         public DateTime CreatedAt {get;set;}
         public DateTime UpdatedAt {get;set;}

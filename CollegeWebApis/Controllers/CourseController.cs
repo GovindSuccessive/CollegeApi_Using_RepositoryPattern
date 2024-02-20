@@ -121,10 +121,10 @@ namespace CollegeWebApis.Controllers
 
         [HttpGet(Name = "GetCourseByPagesNextPrev")]
 
-        public async Task<IEnumerable<Course>> GetCourseByPagesNextPrev(bool nextPage, int pageSize)
+        public async Task<IEnumerable<Course>> GetCourseByPagesNextPrev(bool nextPage, int pageSize, string? searchInput, string? sortingInput)
         {
             // Implementation for paginated retrieval
-            return await _unitOfWork.CourseRepository.GetCoursesByPagesNextPrev(nextPage, pageSize);
+            return await _unitOfWork.CourseRepository.GetCoursesByPagesNextPrev(nextPage, pageSize, searchInput, sortingInput);
         }
 
     }

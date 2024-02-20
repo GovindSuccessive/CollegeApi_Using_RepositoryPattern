@@ -16,6 +16,6 @@ namespace ClassLibrary.Service.CourseService
 
         Task<IEnumerable<Course>> GetCoursesPaged(int page, int pageSize);
 
-        Task<IEnumerable<Course>> GetCoursesByPagesNextPrev(bool nextPage, int pageSize);
+        Task<IEnumerable<Course>> GetCoursesByPagesNextPrev(bool nextPage, int pageSize,string searchInput,string sortingInput);
     }
 }
