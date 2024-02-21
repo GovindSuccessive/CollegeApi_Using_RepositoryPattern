@@ -1,4 +1,5 @@
-﻿using ClassLibrary.Service.CourseService;
+﻿using ClassLibrary.Service.AuthService;
+using ClassLibrary.Service.CourseService;
 using ClassLibrary.Service.StudentService;
 
 namespace ClassLibrary.Service.UnitOfWork

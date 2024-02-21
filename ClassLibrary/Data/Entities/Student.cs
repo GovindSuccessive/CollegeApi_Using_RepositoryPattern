@@ -17,7 +17,7 @@ namespace ClassLibrary.Data.Entities
 
         public Guid CourseRefId { get; set; }
 
-        public virtual Course Course { get; set; }
+        public virtual Course? Course { get; set; }
         public DateTime CreatedAt {get;set;}
         public DateTime UpdatedAt {get;set;}
     }
