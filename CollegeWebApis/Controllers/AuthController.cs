@@ -2,8 +2,6 @@
 using ClassLibrary.Service.AuthService;
 using CollegeWebApis.Model.Dto;
 using CollegeWebApis.Model.RequestModel;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -21,8 +19,11 @@ namespace CollegeWebApis.Controllers
         }
 
         [HttpGet(Name ="Login")]
-        public  IActionResult Login(Microsoft.AspNetCore.Identity.Data.LoginRequest loginRequest)
+        public  IActionResult Login([FromQuery] Microsoft.AspNetCore.Identity.Data.LoginRequest loginRequest)
         {
+            if(!ModelState.IsValid) { 
+                BadRequest(ModelState);
+            }
             var result  =  _authRepository.Login(loginRequest);
             return Ok(result);
         }
@@ -50,9 +51,8 @@ namespace CollegeWebApis.Controllers
                 };
                 await _authRepository.AddUserAsync(newUser);
                 return Ok("User is added Successfully");
-            }
-            return BadRequest("Invalid ModelState");
+            }            
+            return BadRequest(ModelState);  
         }
-
     }
 }

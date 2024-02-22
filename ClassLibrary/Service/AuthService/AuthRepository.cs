@@ -1,5 +1,6 @@
 ﻿using ClassLibrary.Context;
 using ClassLibrary.Data.Entities;
+using CollegeWebApis.Model.RequestModel;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,45 +34,51 @@ namespace ClassLibrary.Service.AuthService
             return users;
         }
 
-        public IResult Login(LoginRequest user)
+        public IResult Login(Microsoft.AspNetCore.Identity.Data.LoginRequest loginRequest)
         {
-            if(user.Email != null && user.Password!=null) {
+            if(loginRequest.Email != null && loginRequest.Password!=null) {
 
-                var res = _collegeDbContext.Users.SingleOrDefault(X => X.Email.ToLower() == user.Email.ToLower() && X.Password.ToLower() == user.Password.ToLower());
+                var res = _collegeDbContext.Users.SingleOrDefault(X => X.Email.ToLower() == loginRequest.Email.ToLower() && X.Password.ToLower() == loginRequest.Password.ToLower());
                 if(res != null)
                 {
                     var issuer = _configuration["Jwt:Issuer"];
                     var audience = _configuration["Jwt:Audience"];
-                    var key = Encoding.ASCII.GetBytes
-                    (_configuration["Jwt:Key"]);
+                    var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
+                    var signingCredentials = new SigningCredentials(
+                                            new SymmetricSecurityKey(key),
+                                            SecurityAlgorithms.HmacSha512Signature
+                                        );
+                    var subject = new ClaimsIdentity(new[]
+                        {
+                        new Claim(JwtRegisteredClaimNames.Sub, loginRequest.Email),
+                        new Claim(JwtRegisteredClaimNames.Email, loginRequest.Email),
+                        });
+
+                    var expires = DateTime.UtcNow.AddMinutes(10);
+
                     var tokenDescriptor = new SecurityTokenDescriptor
                     {
-                        Subject = new ClaimsIdentity(new[]
-                        {
-                            new Claim("Id", Guid.NewGuid().ToString()),
-                            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                            new Claim(JwtRegisteredClaimNames.Jti,
-                            Guid.NewGuid().ToString())
-                        }),
-                        Expires = DateTime.UtcNow.AddMinutes(5),
+                        Subject = subject,
+                        Expires = DateTime.UtcNow.AddMinutes(10),
                         Issuer = issuer,
                         Audience = audience,
-                        SigningCredentials = new SigningCredentials
-                        (new SymmetricSecurityKey(key),
-                        SecurityAlgorithms.HmacSha512Signature)
+                        SigningCredentials = signingCredentials
                     };
                     var tokenHandler = new JwtSecurityTokenHandler();
                     var token = tokenHandler.CreateToken(tokenDescriptor);
                     var jwtToken = tokenHandler.WriteToken(token);
-                    var stringToken = tokenHandler.WriteToken(token);
-                    return Results.Ok(stringToken);
+                    return Results.Ok(jwtToken);
                 }
-                return Results.Unauthorized();
+                else
+                {
+                    return Results.Unauthorized();
+                }
             }
-            return Results.BadRequest(user);
-            
+            return Results.BadRequest(loginRequest);
         }
+
+
+
 
     }
 }

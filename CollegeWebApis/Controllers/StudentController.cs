@@ -4,11 +4,13 @@ using ClassLibrary.Service.CourseService;
 using ClassLibrary.Service.StudentService;
 using ClassLibrary.Service.UnitOfWork;
 using CollegeWebApis.Model.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeWebApis.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[Action]")]
     [ApiController]
     public class StudentController : ControllerBase
@@ -51,7 +53,7 @@ namespace CollegeWebApis.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return NotFound("Student contaning empty fields");
+                return BadRequest(ModelState);
             }
             var newStudent = new Student()
             {
@@ -89,7 +91,11 @@ namespace CollegeWebApis.Controllers
         [HttpPut(Name = "UpdateStudent")]
         public async Task<ActionResult> Update(UpdateStudentDto student)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            else
             {
                 var existingStudnet = await _unitOfWork.StudentRepository.GetByIdAsync(student.Id);
                 if (existingStudnet == null)
@@ -110,9 +116,6 @@ namespace CollegeWebApis.Controllers
                 return Ok("Course Updated Successfully");
 
             }
-            return BadRequest("Course Details are Invalid");
         }
-
-
     }
 }

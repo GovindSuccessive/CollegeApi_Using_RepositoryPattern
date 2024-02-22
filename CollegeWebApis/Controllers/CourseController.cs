@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using CollegeWebApis.Model.Dto;
 using ClassLibrary.Service.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CollegeWebApis.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[Action]")]
     [ApiController]
     public class CourseController : ControllerBase
@@ -37,9 +40,9 @@ namespace CollegeWebApis.Controllers
         [HttpGet(Name = "GetCourseById")]
         public async Task<ActionResult<Course>> GetById(Guid id)
         {
-            if(id==Guid.Empty)
+            if (!ModelState.IsValid)
             {
-                return NotFound("Id is not Found");
+                return BadRequest(ModelState);
             }
             var result = await _unitOfWork.CourseRepository.GetByIdAsync(id);
             if (result == null)
@@ -52,9 +55,9 @@ namespace CollegeWebApis.Controllers
         [HttpPost(Name ="AddCourseDto")]
         public async Task<ActionResult>Add(AddCourseDto course)
         {
-            if(course == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound("Course contaning empty fields");
+                return BadRequest(ModelState);
             }
             var newCourse = new Course()
             {
@@ -71,9 +74,9 @@ namespace CollegeWebApis.Controllers
         [HttpDelete(Name = "DeleteCourse")]
         public async Task<ActionResult> Delete(Guid id)
         {
-            if (id == Guid.Empty)
+            if (!ModelState.IsValid)
             {
-                return NotFound("Id is Not Found");
+                return BadRequest(ModelState);
             }
             var course = await _unitOfWork.CourseRepository.GetByIdAsync(id);
             if (course == null)
@@ -107,24 +110,32 @@ namespace CollegeWebApis.Controllers
                 return Ok("Course Updated Successfully");
                 
             }
-            return BadRequest("Course Details are Invalid");
+            return BadRequest(ModelState);
         }
 
         
         [HttpGet(Name = "GetCourseByPages")]
 
-        public  async Task<IEnumerable<Course>> GetCoursesPaged(int page, int pageSize)
+        public  async Task<ActionResult<IEnumerable<Course>>> GetCoursesPaged(int page, int pageSize)
         {
             // Implementation for paginated retrieval
-            return await   _unitOfWork.CourseRepository.GetCoursesPaged(page, pageSize);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return Ok(await   _unitOfWork.CourseRepository.GetCoursesPaged(page, pageSize));
         }
 
         [HttpGet(Name = "GetCourseByPagesNextPrev")]
 
-        public async Task<IEnumerable<Course>> GetCourseByPagesNextPrev(bool nextPage, int pageSize, string? searchInput, string? sortingInput)
+        public async Task<ActionResult<IEnumerable<Course>>> GetCourseByPagesNextPrev(bool nextPage, int pageSize, string? searchInput, string? sortingInput)
         {
             // Implementation for paginated retrieval
-            return await _unitOfWork.CourseRepository.GetCoursesByPagesNextPrev(nextPage, pageSize, searchInput, sortingInput);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            return Ok(await _unitOfWork.CourseRepository.GetCoursesByPagesNextPrev(nextPage, pageSize, searchInput, sortingInput));
         }
 
     }
